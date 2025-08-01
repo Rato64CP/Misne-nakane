@@ -18,11 +18,11 @@ repositories {
 }
 
 android {
-    namespace 'com.example.misnenakane'
+    namespace 'com.svetemise'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.misnenakane"
+        applicationId "com.svetemise"
         minSdk 21
         targetSdk 34
         versionCode 1
@@ -42,5 +42,5 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'com.google.android.material:material:1.9.0'
-    implementation 'com.prolificinteractive:material-calendarview:2.0.1'
+    implementation 'com.prolificinteractive:material-calendarview:1.4.3'
 }
