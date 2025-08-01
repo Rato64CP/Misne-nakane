@@ -2,6 +2,8 @@ package com.example.misnenakane
 
 import android.os.Bundle
 import android.graphics.Color
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Toast
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -11,16 +13,21 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private val db = Firebase.firestore
     private val intentDates = mutableSetOf<CalendarDay>()
+    private val weekButtons = mutableListOf<Pair<String, Button>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val calendarView = findViewById<MaterialCalendarView>(R.id.calendarView)
+        val weekLayout = findViewById<LinearLayout>(R.id.weekLayout)
+
+        setupWeekView(weekLayout)
 
         db.collection("nakane").addSnapshotListener { snapshot, _ ->
             intentDates.clear()
@@ -34,6 +41,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             refreshDecorators(calendarView)
+            updateWeekButtons(snapshot)
         }
 
         calendarView.setOnDateChangedListener { _, date, _ ->
@@ -59,10 +67,17 @@ class MainActivity : AppCompatActivity() {
 
             val dateKey = String.format("%04d-%02d-%02d", date.year, date.month, date.day)
 
-            NakanaDialog(this, dateKey) { tekst, sat ->
-                if (tekst.isNotBlank()) {
-                    val data = hashMapOf<String, Any>("tekst" to tekst)
-                    sat?.let { data["sat"] = it }
+            NakanaDialog(this, dateKey) { tekst, sat, tekst2, sat2 ->
+                if (tekst.isNotBlank() || !tekst2.isNullOrBlank()) {
+                    val data = hashMapOf<String, Any>()
+                    if (tekst.isNotBlank()) {
+                        data["tekst"] = tekst
+                        sat?.let { data["sat"] = it }
+                    }
+                    if (!tekst2.isNullOrBlank()) {
+                        data["tekst2"] = tekst2
+                        sat2?.let { data["sat2"] = it }
+                    }
                     db.collection("nakane").document(dateKey).set(data)
                 }
             }.show()
@@ -83,5 +98,63 @@ class MainActivity : AppCompatActivity() {
                 view.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.parseColor("#FFFF99")))
             }
         })
+    }
+
+    private fun setupWeekView(layout: LinearLayout) {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        for (i in 0..6) {
+            val dayCal = cal.clone() as Calendar
+            dayCal.add(Calendar.DAY_OF_MONTH, i)
+            val dateKey = String.format(
+                "%04d-%02d-%02d",
+                dayCal.get(Calendar.YEAR),
+                dayCal.get(Calendar.MONTH) + 1,
+                dayCal.get(Calendar.DAY_OF_MONTH)
+            )
+            val btn = Button(this)
+            btn.setOnClickListener {
+                NakanaDialog(this, dateKey) { t, s, t2, s2 ->
+                    if (t.isNotBlank() || !t2.isNullOrBlank()) {
+                        val data = hashMapOf<String, Any>()
+                        if (t.isNotBlank()) {
+                            data["tekst"] = t
+                            s?.let { data["sat"] = it }
+                        }
+                        if (!t2.isNullOrBlank()) {
+                            data["tekst2"] = t2
+                            s2?.let { data["sat2"] = it }
+                        }
+                        db.collection("nakane").document(dateKey).set(data)
+                    }
+                }.show()
+            }
+            layout.addView(btn)
+            weekButtons.add(dateKey to btn)
+        }
+    }
+
+    private fun updateWeekButtons(snapshot: com.google.firebase.firestore.QuerySnapshot?) {
+        val docs = snapshot?.documents?.associateBy { it.id } ?: emptyMap()
+        weekButtons.forEach { (key, btn) ->
+            val parts = key.split("-")
+            val cal = Calendar.getInstance()
+            cal.set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+            val dayName = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
+            var text = "$dayName: "
+            docs[key]?.let { doc ->
+                val items = mutableListOf<String>()
+                doc.getString("tekst")?.let { t ->
+                    val time = doc.getString("sat")
+                    items.add(t + (time?.let { " ($it)" } ?: ""))
+                }
+                doc.getString("tekst2")?.let { t ->
+                    val time = doc.getString("sat2")
+                    items.add(t + (time?.let { " ($it)" } ?: ""))
+                }
+                text += items.joinToString(" | ")
+            }
+            btn.text = text
+        }
     }
 }

@@ -17,4 +17,19 @@
         android:layout_height="wrap_content"
         android:hint="Sat mise (npr. 18:30)"
         android:inputType="time" />
+
+    <EditText
+        android:id="@+id/editTextNakana2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Druga nakana"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/editTextSat2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Sat druge mise"
+        android:inputType="time"
+        android:visibility="gone" />
 </LinearLayout>
