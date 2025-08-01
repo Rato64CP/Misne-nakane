@@ -1,4 +1,4 @@
-package com.example.misnenakane
+package com.svetemise
 
 import android.os.Bundle
 import android.graphics.Color
