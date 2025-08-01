@@ -1,4 +1,4 @@
-package com.example.misnenakane
+package com.svetemise
 
 import android.app.AlertDialog
 import android.content.Context
@@ -8,6 +8,7 @@ import android.widget.EditText
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.Calendar
+import com.svetemise.R
 
 class NakanaDialog(
     private val context: Context,
