@@ -10,4 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Upiši misnu nakanu" />
+
+    <EditText
+        android:id="@+id/editTextSat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Sat mise (npr. 18:30)"
+        android:inputType="time" />
 </LinearLayout>
