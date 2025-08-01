@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "234305594475",
-    "project_id": "prefab-root-116119",
-    "storage_bucket": "prefab-root-116119.firebasestorage.app"
+    "project_number": "347190275864",
+    "project_id": "svete-mise",
+    "storage_bucket": "svete-mise.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:234305594475:android:d3b552b84d4fb133cb7d2e",
+        "mobilesdk_app_id": "1:347190275864:android:70037ead99abfe751df86d",
         "android_client_info": {
-          "package_name": "com.misnenakane"
+          "package_name": "com.svetemise"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "234305594475-gsi2r21thobtb85q38iuo5ni9239hjsf.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAeLhNc5IPMYXML7IlMdCMnSXasBhBnNjI"
+          "current_key": "AIzaSyCzV4TOGpsEY7fk8rWZ60ddegRPswf9nVg"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "234305594475-gsi2r21thobtb85q38iuo5ni9239hjsf.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
