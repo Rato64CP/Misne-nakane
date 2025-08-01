@@ -1,0 +1,14 @@
+# Android
+.gradle/
+.idea/
+*.iml
+/local.properties
+/build/
+captures/
+
+# Firebase – nikako ne dijeli ovo!
+google-services.json
+
+# Keš
+*.log
+*.tmp
