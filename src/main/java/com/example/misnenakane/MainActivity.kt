@@ -5,10 +5,12 @@ import android.graphics.Color
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
+import org.json.JSONObject
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
+import com.example.misnenakane.R
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -19,10 +21,27 @@ class MainActivity : AppCompatActivity() {
     private val db = Firebase.firestore
     private val intentDates = mutableSetOf<CalendarDay>()
     private val weekButtons = mutableListOf<Pair<String, Button>>()
+    private val feasts = mutableMapOf<String, String>()
+    private val feastDates = mutableSetOf<CalendarDay>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        resources.openRawResource(R.raw.blagdani).bufferedReader().use { reader ->
+            val obj = JSONObject(reader.readText())
+            obj.keys().forEach { key ->
+                val name = obj.getString(key)
+                feasts[key] = name
+                val parts = key.split("-")
+                if (parts.size == 3) {
+                    val y = parts[0].toInt()
+                    val m = parts[1].toInt()
+                    val d = parts[2].toInt()
+                    feastDates.add(CalendarDay.from(y, m, d))
+                }
+            }
+        }
 
         val calendarView = findViewById<MaterialCalendarView>(R.id.calendarView)
         val weekLayout = findViewById<LinearLayout>(R.id.weekLayout)
@@ -93,6 +112,12 @@ class MainActivity : AppCompatActivity() {
             }
         })
         calendarView.addDecorator(object : DayViewDecorator {
+            override fun shouldDecorate(day: CalendarDay) = feastDates.contains(day)
+            override fun decorate(view: DayViewFacade) {
+                view.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.parseColor("#FFCCCC")))
+            }
+        })
+        calendarView.addDecorator(object : DayViewDecorator {
             override fun shouldDecorate(day: CalendarDay) = intentDates.contains(day)
             override fun decorate(view: DayViewFacade) {
                 view.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(Color.parseColor("#FFFF99")))
@@ -142,6 +167,9 @@ class MainActivity : AppCompatActivity() {
             cal.set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
             val dayName = cal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault())
             var text = "$dayName: "
+            feasts[key]?.let { feast ->
+                text += "$feast "
+            }
             docs[key]?.let { doc ->
                 val items = mutableListOf<String>()
                 doc.getString("tekst")?.let { t ->
